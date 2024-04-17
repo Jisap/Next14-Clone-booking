@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { FaStar, FaStarHalf } from 'react-icons/fa'
 
 
 
@@ -31,10 +32,26 @@ const RoomList = ({rooms}: {rooms:any}) => {
               </div>
             </Link>
 
-            <div className="h-[134px] bg-pink-200">
-              <div className="flex">
-
+            <div className="h-[134px]">
+              <div className="flex items-center justify-between mb-6">
+                <div>Capacity - {room.attributes.capacity} person</div>
+                <div className="flex gap-1 text-accent">
+                  <FaStar />
+                  <FaStar />
+                  <FaStar />
+                  <FaStar />
+                  <FaStarHalf />
+                </div>
               </div>
+
+              <Link href={`/room/${room.id}`}>
+                <h3 className="h3">{room.attributes.title}</h3>
+              </Link>
+
+              <p className="h3 font-secondary font-medium text-accent mb-4">
+                ${room.attributes.price} <span className="text-base text-secondary">/ night</span>
+              </p>
+
             </div>
           </div>
         )
