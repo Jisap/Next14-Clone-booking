@@ -14,19 +14,17 @@ import {
 
 const RoomList = ({ rooms }: { rooms: any}) => {
 
-  const [roomType, setRoomType] = useState('all')
-  const [filteredRooms, setFilteredRooms] = useState([])
+  const [roomType, setRoomType] = useState('all');
+  const [filteredRooms, setFilteredRooms] = useState([]);
 
   useEffect(() => {
     const filtered = rooms.data?.filter((room:any) => {
       return roomType === 'all' ? rooms : roomType === room.attributes.type
     })
 
-    setFilteredRooms(filtered)
+    setFilteredRooms(filtered);
 
-  }, [roomType])
-
-  console.log(filteredRooms)
+  }, [roomType]);
 
   return (
     <section className="py-16 min-h-[90vh]">
