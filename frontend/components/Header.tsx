@@ -19,6 +19,7 @@ import { RegisterLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components
 import { Button } from "./ui/button"
 import Dropdown from "./Dropdown"
 import MobileNav from "./MobileNav"
+import DesktopNav from "./DesktopNav"
 
 const Header = async() => {
 
@@ -87,7 +88,9 @@ const Header = async() => {
               <MobileNav />
             </div>
             {/* desktop nav */}
-            <div className="hidden xl:flex">desktop nav</div>
+            <div className="hidden xl:flex">
+              <DesktopNav isUserAuthenticated={isUserAuthenticated} />
+            </div>
           </div>
         </div>
       </div>
