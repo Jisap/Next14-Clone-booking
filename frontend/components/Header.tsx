@@ -18,6 +18,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { RegisterLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components"
 import { Button } from "./ui/button"
 import Dropdown from "./Dropdown"
+import MobileNav from "./MobileNav"
 
 const Header = async() => {
 
@@ -82,6 +83,11 @@ const Header = async() => {
               }
             </div>
             {/* mobile nav */}
+            <div className="xl:hidden">
+              <MobileNav />
+            </div>
+            {/* desktop nav */}
+            <div className="hidden xl:flex">desktop nav</div>
           </div>
         </div>
       </div>
