@@ -27,7 +27,6 @@ const Header = async() => {
   const isUserAuthenticated = await isAuthenticated();
   
   const user = await getUser();
-  console.log(user)
 
   return (
     <header className="py-6 shadow-md">
