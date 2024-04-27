@@ -12,6 +12,27 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
+import AlertMessage from './AlertMessage';
+
+const postData = async(url:string, data:object) => {
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  };
+
+  try {
+    
+    const res = await fetch(url, options);
+    const data = await res.json();
+    return data;
+
+  } catch (error) {
+    console.log(error)
+  }
+}
 
 const Reservation = ({
   reservations,
@@ -27,10 +48,53 @@ const Reservation = ({
 
   const [checkInDate, setCheckInDate] = useState<Date>();
   const [checkOutDate, setCheckOutDate] = useState<Date>();
+  const [alertMessage, setAlertMessage] = useState<{
+    message: string;
+    type: 'error' | 'success' | null;
+  } | null>(null);
+
+  const formatDateForStrapi = (date:Date) => {
+    return format(date, "yyyy-MM-dd")
+  } 
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAlertMessage(null)
+    },3000)
+
+    return () => clearTimeout(timer)
+
+  }, [ alertMessage ])
 
   const saveReservation = () => {
-    console.log("reservation saved")
+    if(!checkInDate || !checkOutDate) {
+      setAlertMessage({
+        message: "Please select check-in and check-out dates",
+        type: "error"
+      });
+    }
 
+    if(checkInDate?.getTime() === checkOutDate?.getTime()){
+      return setAlertMessage({
+        message: "Check-in and check-out dates cannot be the same",
+        type: "error"
+      })
+    }
+
+    //dummy data
+    const data = {
+      data: {
+        firstname: 'Jhon',
+        lastname: 'Doe',
+        email: 'jhondoe@gmail.com',
+        checkIn: checkInDate ? formatDateForStrapi(checkInDate) : null,
+        checkOut: checkOutDate ? formatDateForStrapi(checkOutDate) : null,
+        room: room.data.id
+      }
+    };
+
+    // post booking data to server
+    postData('http://127.0.0.1:1337/api/reservations', data)
   }
  
   return (
@@ -119,8 +183,11 @@ const Reservation = ({
 
         </div>
       </div>
+    
+    {alertMessage && <AlertMessage message={alertMessage.message} type={alertMessage.type} />}
+    
     </div>
-  )
-}
+  );
+};
 
 export default Reservation
