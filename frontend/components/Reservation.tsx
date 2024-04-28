@@ -13,6 +13,9 @@ import {
 } from "@/components/ui/popover";
 import { LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import AlertMessage from './AlertMessage';
+import { useRouter } from 'next/navigation';
+
+
 
 const postData = async(url:string, data:object) => {
   const options = {
@@ -53,13 +56,15 @@ const Reservation = ({
     type: 'error' | 'success' | null;
   } | null>(null);
 
+  const router = useRouter();
+
   const formatDateForStrapi = (date:Date) => {
     return format(date, "yyyy-MM-dd")
   } 
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setAlertMessage(null)
+      return setAlertMessage(null)
     },3000)
 
     return () => clearTimeout(timer)
@@ -68,33 +73,63 @@ const Reservation = ({
 
   const saveReservation = () => {
     if(!checkInDate || !checkOutDate) {
-      setAlertMessage({
+      return setAlertMessage({
         message: "Please select check-in and check-out dates",
         type: "error"
       });
     }
 
-    if(checkInDate?.getTime() === checkOutDate?.getTime()){
+    if(checkInDate.getTime() === checkOutDate.getTime()){
       return setAlertMessage({
         message: "Check-in and check-out dates cannot be the same",
         type: "error"
       })
     }
 
-    //dummy data
-    const data = {
-      data: {
-        firstname: 'Jhon',
-        lastname: 'Doe',
-        email: 'jhondoe@gmail.com',
-        checkIn: checkInDate ? formatDateForStrapi(checkInDate) : null,
-        checkOut: checkOutDate ? formatDateForStrapi(checkOutDate) : null,
-        room: room.data.id
-      }
-    };
+    //filter reservations for the current room 
+    const isReserved = reservations.data.filter((item:any) => item.attributes.room.data.id === room.data.id) // Reservas para la room seleccionada
+      .some((item:any) => {                                                                                  // Para cada reserva 
+        const existingCheckIn = new Date(item.attributes.checkIn).setHours(0, 0, 0, 0);                      // obtenemos las fechas de entrada 
+        const existingCheckOut = new Date(item.attributes.checkOut).setHours(0, 0, 0, 0);                    // y salida que ya existan para la room
+        const checkInTime = checkInDate.setHours(0, 0, 0, 0)                                                 // y messalas fechas de la reserva actual 
+        const checkOutTime = checkOutDate.setHours(0, 0, 0, 0) 
+        const isReservedBetweenDates = 
+          (checkInTime >= existingCheckIn && checkInTime < existingCheckOut) ||     // verifica si entrada actual es posterior o = entrada de la reserva existente && entrada de la reserva actual es anterior a la hora de salida de la reserva existente
+          (checkOutTime > existingCheckIn && checkOutTime <= existingCheckOut) ||   // verifica si salida de la reserva actual es posterior a entrada de la reserva existente && salida de la reserva actual es anterior o igual a la hora de salida de la reserva existente.
+          (existingCheckIn > checkInTime && existingCheckIn < checkOutTime) ||      // verifica si entrada de la reserva existente es posterior a la entrada de la reserva actual && si la entrada de la reserva existente es anterior a la hora de salida de la reserva actual.
+          (existingCheckOut > checkInTime && existingCheckOut <= checkOutTime)      // verifica si salida de la reserva existente es posterior a la entrada de la reserva actual && si la salida de la reserva existente es anterior o igual a la salida de la reserva actual. 
 
-    // post booking data to server
-    postData('http://127.0.0.1:1337/api/reservations', data)
+          return isReservedBetweenDates // return true if any reservation overlaps with selected dates
+      })
+
+      // if the room is reserved log a message otherwise proceed with booking
+      if(isReserved){
+        setAlertMessage({
+          message: 'This room is already booked for the selected dates. Please choose diferent dates or another room.',
+          type: 'error'
+        })
+      }else{
+
+        const data = {
+          data: {
+            firstname: userData.family_name,
+            lastname: userData.given_name,
+            email: userData.email,
+            checkIn: checkInDate ? formatDateForStrapi(checkInDate) : null,
+            checkOut: checkOutDate ? formatDateForStrapi(checkOutDate) : null,
+            room: room.data.id
+          }
+        };
+
+        // post booking data to server
+        postData('http://127.0.0.1:1337/api/reservations', data);
+        setAlertMessage({
+          message: 'Your booking has been succesfully confirmed! We look forward to welcoming you on your selected dates.',
+          type: 'success'
+        });
+        // Refresh the page to reflect the updates reservation status
+        router.refresh()
+      }  
   }
  
   return (
