@@ -28,13 +28,19 @@ const Dashboard = async() => {
         <h3 className="h3 font-bold mb-12 border-b pb-4 text-center lg:text-left">
           My bookings
         </h3>
-        <div>
+        <div className="flex flex-col gap-8 h-full">
           { userReservations.data.length < 1 
               ? (
-                <div>
-                  <p>
+                <div className="flex flex-col items-center justify-center h-[50vh]">
+                  <p className="text-xl text-center text-secondary/70 mb-4">
                     You don't have any reservation.
                   </p>
+                  {/* back to homepage button*/}
+                  <Link href='/'>
+                    <Button size='md'>
+                      Go to homepage
+                    </Button>
+                  </Link>
                 </div>
               )
               : (
