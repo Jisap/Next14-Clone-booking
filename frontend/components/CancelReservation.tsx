@@ -46,7 +46,7 @@ const CancelReservation = ({reservation}: { reservation:any }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <Button size="md">Candel Reservation</Button>
+        <Button size="md">Cancel Reservation</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         {/* dialog header */}
