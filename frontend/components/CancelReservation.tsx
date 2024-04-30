@@ -16,6 +16,33 @@ import {
 
 
 const CancelReservation = ({reservation}: { reservation:any }) => {
+
+  const router = useRouter();
+
+  const deleteData = async (url: string) => {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    };
+
+    try {
+
+      const res = await fetch(url, options);
+      const data = await res.json();
+      return data
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const cancelReservation = (id: number) => {
+    deleteData(`http://127.0.0.1:1337/api/reservations/${id}`);
+    router.refresh();
+  }
+
   return (
     <AlertDialog>
       <AlertDialogTrigger>
@@ -32,7 +59,9 @@ const CancelReservation = ({reservation}: { reservation:any }) => {
         {/* dialog footer */}
         <AlertDialogFooter>
           <AlertDialogCancel>Dimiss</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={() => cancelReservation(reservation.id)}>
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

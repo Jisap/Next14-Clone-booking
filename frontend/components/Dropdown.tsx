@@ -55,7 +55,7 @@ const Dropdown = ({user}:any) => {
               </DropdownMenuShortcut>
             </DropdownMenuItem>
           </Link>
-          <Link href="/">
+          <Link href="/dashboard">
             <DropdownMenuItem>
               My Bookings
               <DropdownMenuShortcut className="text-lg text-accent">
