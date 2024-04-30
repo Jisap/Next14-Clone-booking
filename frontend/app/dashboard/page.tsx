@@ -69,7 +69,9 @@ const Dashboard = async() => {
                             </span>
                           </div>
                         </div>
-                        <CancelReservation />
+                        <CancelReservation
+                          reservation={reservation}
+                        />
                       </div>
                     </div>
                   )
